@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
+    <link rel="stylesheet" media="screen"
+        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css"> -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Chaos Theory fish populations predictions</title>
+</head>
+
+<body>
+    <div class="ui grid">
+        <div class="column">
+            <div class="ui segment">
+                <div class="ui segment">
+                    <h1 h1 class="ui header">Chaos Fish </h1>
+
+                    <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMHphT-lWSGErbCiLsOEHKOsIg0y0Z7WE2skqbpCvB7dEXqdrP&s">
+                    <div class="ui segment">
+                        <p>
+                            Did a little bit of Chaos Theory back in the 90's when it was trendy, using C.
+                            I seem to remember it putting PC at the time under pressure.
+                            Wanted to see if I could do it again with a browser. Seems to push the browser to its
+                            limits, will crash if I enable ajax or the css framework.
+                        </p>
+                        <p>
+                            I think that it was biologists that happend upon this brand of Maths. They noted that
+                            when the rate of population growth went beyond 2.75 the predictions on future populations
+                            became increasingly chaotic.</p>
+                        <p>
+                            The equation is a model for population growth in a fish pond, which looks like this:
+                        </p>
+                    </div>
+                    <div class="ui segment">
+                        <strong>x_next = r*x*(1-x)</strong>
+                    </div>
+                    <div class="ui segment">
+                        Meaning that the population for the next iteration (year, month, day, whatever) equals
+                        <strong>x_next</strong>,
+                        the rate of population growth <strong>r</strong>,
+                        multiplied by the current population
+                        <strong>x</strong>,
+                        multiplied by a term that keeps the population within bounds (e.g. as the population increases,
+                        food becomes increasingly scarce and some of our fish die or move to less crowded ponds).
+                        <strong>(1-x)</strong>.
+
+
+
+                    </div>
+                    <div class="ui segment">
+                        <p>
+                            The parameter manipulated is the rate of growth <strong>r</strong>,
+                            The fish population oscillates in regular patterns over multiple iterations and eventually
+                            becomes chaotic, i.e., no regular pattern is readily apparent.
+                            Manipulated the <strong>r</strong> value between 2.75 and 4 to see some Chaos </p>
+                        Try 4
+                        <form name="rvalue" , id="rvalue" action="#">
+                            <select id="rvalue" name="rvalue" size="1">
+                                <option value=2>2</option>
+                                <option value=2.75>2.75</option>
+                                <option value=3>3</option>
+                                <option value=3.25>3.25</option>
+                                <option value=3.5>3.5</option>
+                                <option value=3.75>3.75</option>
+                                <option value=4>4</option>
+                            </select>
+                            <input type="button" name="submit" value="Submit" onclick="processFormData();" />
+
+                        </form>
+                        <br><br>
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tester" style="width:1800px;height:1000px;"></div>
+    <script>
+        function processFormData() {
+            let rvalue = 4
+
+
+            var rvalueSel = document.forms.rvalue.elements['rvalue'].selectedIndex;
+            rvalue = document.forms.rvalue.elements["rvalue"].options[rvalueSel].value;
+
+
+
+            console.log(rvalue);
+
+            let x = .4
+            let numberOfIterations = 100
+            let xaxis = []
+            let yaxis = []
+            for (r = 1; r <= rvalue; r = r + 0.002) {
+                for (i = 0; i <= numberOfIterations; i++) {
+                    x = r * x * (1 - x);
+                    yaxis.push(x);
+                    xaxis.push(r);
+                }
+            }
+            // graph colour
+            var layout = {
+                colorway: ['#3d3b72']
+            };
+            //graph
+            TESTER = document.getElementById('tester');
+            Plotly.plot(TESTER, [{
+                x: xaxis,
+                y: yaxis,
+                mode: 'markers',
+                marker: { size: 1.2 }
+            }], layout, {
+                margin: { t: 1 }
+            });
+
+        }
+    </script>
+
+</body>
+
+</html>
