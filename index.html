@@ -2,12 +2,13 @@
 <html>
 
 <head>
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.js"></script>
     <link rel="stylesheet" media="screen"
-        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css"> -->
+        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.min.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
     <meta charset="UTF-8">
     <title>Chaos Theory fish populations predictions</title>
 </head>
@@ -23,17 +24,16 @@
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMHphT-lWSGErbCiLsOEHKOsIg0y0Z7WE2skqbpCvB7dEXqdrP&s">
                     <div class="ui segment">
                         <p>
-                            Did a little bit of Chaos Theory back in the 90's when it was trendy, using C.
-                            I seem to remember it putting PC at the time under pressure.
-                            Wanted to see if I could do it again with a browser. Seems to push the browser to its
-                            limits, will crash if I enable ajax or the css framework.
+                            Did a little bit of Chaos Theory back in the 90's when it was trendy, using C with borland IDE.
+                            I seem to remember it putting PC at the time under pressure (p90,16mb of ram).
+                            Wanted to see if I could do it again with a browser. 
                         </p>
                         <p>
                             I think that it was biologists that happend upon this brand of Maths. They noted that
-                            when the rate of population growth went beyond 2.75 the predictions on future populations
+                            when the rate of population growth went beyond 3 the predictions on future populations
                             became increasingly chaotic.</p>
                         <p>
-                            The equation is a model for population growth in a fish pond, which looks like this:
+                            The equation is a model for population growth in a fish pond is pretty trivial and looks like this:
                         </p>
                     </div>
                     <div class="ui segment">
@@ -46,7 +46,7 @@
                         multiplied by the current population
                         <strong>x</strong>,
                         multiplied by a term that keeps the population within bounds (e.g. as the population increases,
-                        food becomes increasingly scarce and some of our fish die or move to less crowded ponds).
+                        food becomes increasingly scarce and some of our fish die).
                         <strong>(1-x)</strong>.
 
 
@@ -57,7 +57,7 @@
                             The parameter manipulated is the rate of growth <strong>r</strong>,
                             The fish population oscillates in regular patterns over multiple iterations and eventually
                             becomes chaotic, i.e., no regular pattern is readily apparent.
-                            Manipulated the <strong>r</strong> value between 2.75 and 4 to see some Chaos </p>
+                            Manipulated the <strong>r</strong> value between 2.75 and 4 to see some progression of Chaos </p>
                         Try 4
                         <form name="rvalue" , id="rvalue" action="#">
                             <select id="rvalue" name="rvalue" size="1">
@@ -73,7 +73,7 @@
 
                         </form>
                         <br><br>
-
+                        <div id="chartContainer" style="height: 1000px; width: 100%;"></div>
                     </div>
 
 
@@ -82,44 +82,98 @@
             </div>
         </div>
     </div>
-    <div id="tester" style="width:1800px;height:1000px;"></div>
+    <!-- <div id="tester" style="width:1800px;height:1000px;"></div> -->
+   
     <script>
-        function processFormData() {
-            let rvalue = 4
 
+        var xaxis = []
+        var yaxis = []
+        var datapoints = []
+        window.onload = function () {
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                zoomEnabled: true,
+                title: {
+                    text: "Fish Populations Chaos"
+                },
+                axisX: {
+                    title: "r the rate of population change"
+
+                },
+                axisY: {
+                    title: "x_next the predicted population",
+                    minimum: 0                    
+                },
+                data: [{
+                    type: "scatter",
+                    markerSize: 1,
+                    toolTipContent: "<b>x_next value: </b>{x} <br/><b>r the rate of population change: </b>{y}",
+                    dataPoints: datapoints
+                }]
+            });
+            chart.render();
+        }
+        function processFormData() {
+
+            localStorage.clear()
 
             var rvalueSel = document.forms.rvalue.elements['rvalue'].selectedIndex;
             rvalue = document.forms.rvalue.elements["rvalue"].options[rvalueSel].value;
 
-
-
             console.log(rvalue);
 
-            let x = .4
-            let numberOfIterations = 100
-            let xaxis = []
-            let yaxis = []
-            for (r = 1; r <= rvalue; r = r + 0.002) {
+            let x = .4;
+            let numberOfIterations = 100;
+
+            for (r = 1; r <= rvalue; r = r + 0.001) {
                 for (i = 0; i <= numberOfIterations; i++) {
                     x = r * x * (1 - x);
-                    yaxis.push(x);
-                    xaxis.push(r);
+                    // yaxis.push(x);
+                    // xaxis.push(r);
+                    datapoints.push({x:r,y:x})
                 }
             }
             // graph colour
-            var layout = {
-                colorway: ['#3d3b72']
-            };
+            // var layout = {
+            //     colorway: ['#3d3b72']
+            // };
+            // plotly seems to fall over with memory issues on second call
             //graph
-            TESTER = document.getElementById('tester');
-            Plotly.plot(TESTER, [{
-                x: xaxis,
-                y: yaxis,
-                mode: 'markers',
-                marker: { size: 1.2 }
-            }], layout, {
-                margin: { t: 1 }
+            // TESTER = document.getElementById('tester');
+            // Plotly.plot(TESTER, [{
+            //     x: xaxis,
+            //     y: yaxis,
+            //     mode: 'markers',
+            //     marker: { size: 1.2 }
+            // }], layout, {
+            //     margin: { t: 1 }
+            // });
+            // xaxis.length = 0;
+            // yaxis.length = 0;
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                zoomEnabled: true,
+                title: {
+                    text: "Fish Populations Chaos"
+                },
+                axisX: {
+                    title: "r the rate of population change"
+
+                },
+                axisY: {
+                    title: "x_next the predicted population",
+                    minimum: 0                    
+                },
+                data: [{
+                    type: "scatter",
+                    markerSize: 1,
+                    toolTipContent: "<b>x_next value: </b>{x} <br/><b>r the rate of population change: </b>{y}",
+                    dataPoints: datapoints
+                }]
             });
+            chart.render();
+            datapoints.length = 0
 
         }
     </script>
